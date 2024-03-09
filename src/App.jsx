@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [createVisible, setCreateVisible] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [msg, setMsg] = useState(null)
-  //const [newBlog, setNewBlog] = useState('')
-  //const [errorMessage, setErrorMessage] = useState(null)
 
   const handleNotification = (message, color) => {
     setMsg({ message, color })
@@ -78,7 +79,7 @@ const App = () => {
     try {
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
-      setNewTitle(''), setNewAuthor(''), setNewUrl('')
+      setNewTitle(''), setNewAuthor(''), setNewUrl(''), setCreateVisible(false)
       handleNotification(`A new blog ${newTitle} by ${newAuthor} added`, {
         text: 'green',
         border: 'green',
@@ -103,65 +104,6 @@ const App = () => {
     setNewUrl(event.target.value)
   }
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        Title:
-        <input
-          type='text'
-          value={newTitle}
-          name='title'
-          onChange={handleTitleChange}
-        />
-      </div>
-      <div>
-        Author:
-        <input
-          type='text'
-          value={newAuthor}
-          name='author'
-          onChange={handleAuthorChange}
-        />
-      </div>
-      <div>
-        Url:
-        <input
-          type='text'
-          value={newUrl}
-          name='url'
-          onChange={handleUrlChange}
-        />
-      </div>
-      <div>
-        <button type='submit'>create</button>
-      </div>
-    </form>
-  )
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type='text'
-          value={username}
-          name='Username'
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type='submit'>login</button>
-    </form>
-  )
-
   const logOutForm = () => (
     <form onSubmit={handleLogout}>
       <div>
@@ -173,22 +115,53 @@ const App = () => {
     </form>
   )
 
+  const blogForm = () => {
+    const hideWhenVisible = { display: createVisible ? 'none' : '' }
+    const showWhenVisible = { display: createVisible ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setCreateVisible(true)}>Add new blog </button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm
+            onSubmit={addBlog}
+            titleValue={newTitle}
+            onTitleChange={handleTitleChange}
+            authorValue={newAuthor}
+            onAuthorChange={handleAuthorChange}
+            urlValue={newUrl}
+            onUrlChange={handleUrlChange}
+          />
+          <button onClick={() => setCreateVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
+
   if (user === null) {
     return (
       <div>
-        <h2>Log in to application</h2>
         <Notification message={msg && msg.message} color={msg && msg.color} />
-        {loginForm()}
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
       </div>
     )
   }
   return (
     <div>
-      <h2>blogs</h2>
+      <h2>Blogs</h2>
       <Notification message={msg && msg.message} color={msg && msg.color} />
       {logOutForm()}
       <div>{blogForm()}</div>
       <div>
+        <h3>List of Blogs</h3>
         {blogs.map(blog => (
           <Blog key={blog.id} blog={blog} />
         ))}
