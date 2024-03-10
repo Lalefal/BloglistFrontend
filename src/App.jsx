@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogRow from './components/BlogRow'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -13,9 +14,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  // const [newTitle, setNewTitle] = useState('')
-  // const [newAuthor, setNewAuthor] = useState('')
-  // const [newUrl, setNewUrl] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [msg, setMsg] = useState(null)
 
@@ -35,7 +33,7 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBloggappUser')
+    const loggedUserJSON = window.localStorage.getItem('loggedUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
@@ -51,7 +49,7 @@ const App = () => {
         username,
         password,
       })
-      window.localStorage.setItem('loggedBloggappUser', JSON.stringify(user))
+      window.localStorage.setItem('loggedUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -66,49 +64,32 @@ const App = () => {
 
   const handleLogout = async event => {
     event.preventDefault()
-    window.localStorage.removeItem('loggedBloggappUser')
+    window.localStorage.removeItem('loggedUser')
     setUser(null)
   }
 
-  const addBlog = blogObject => {
-    blogService.create(blogObject).then(returnedBlog => {
+  const blogFormRef = useRef() //viite komponenttiin
+
+  const addBlog = async blogObject => {
+    blogFormRef.current.toggleVisibility()
+    try {
+      const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
-    })
+      handleNotification(
+        `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        {
+          text: 'green',
+          border: 'green',
+        }
+      )
+    } catch (error) {
+      handleNotification(error.response.data.error, {
+        text: 'red',
+        border: 'red',
+      })
+    }
   }
-  //const addBlog = async event => {
-  // event.preventDefault()
-  // const blogObject = {
-  //   title: newTitle,
-  //   author: newAuthor,
-  //   url: newUrl,
-  // }
-  //   try {
-  //     const returnedBlog = await blogService.create(blogObject)
-  //     setBlogs(blogs.concat(returnedBlog))
-  //     // setNewTitle(''), setNewAuthor(''), setNewUrl(''), setCreateVisible(false)
-  //     handleNotification(`A new blog ${newTitle} by ${newAuthor} added`, {
-  //       text: 'green',
-  //       border: 'green',
-  //     })
-  //   } catch (error) {
-  //     handleNotification(error.response.data.error, {
-  //       text: 'red',
-  //       border: 'red',
-  //     })
-  //   }
-  // }
 
-  // const handleTitleChange = event => {
-  //   setNewTitle(event.target.value)
-  // }
-
-  // const handleAuthorChange = event => {
-  //   setNewAuthor(event.target.value)
-  // }
-
-  // const handleUrlChange = event => {
-  //   setNewUrl(event.target.value)
-  // }
 
   if (user === null) {
     return (
@@ -128,26 +109,25 @@ const App = () => {
   }
   return (
     <div>
-      <h2>Blogs</h2>
+      <h2>Welcome to BlogsList</h2>
       <Notification message={msg && msg.message} color={msg && msg.color} />
       <LogoutForm handleLogout={handleLogout} userName={user.name} />
 
-      <Togglable buttonLabel='Add new blog'>
+      <Togglable buttonLabel='Add new blog' ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
-        {/* <BlogForm
-          onSubmit={addBlog}
-          titleValue={newTitle}
-          onTitleChange={handleTitleChange}
-          authorValue={newAuthor}
-          onAuthorChange={handleAuthorChange}
-          urlValue={newUrl}
-          onUrlChange={handleUrlChange} /> */}
       </Togglable>
       <div>
         <h3>List of Blogs</h3>
         {blogs.map(blog => (
           <Blog key={blog.id} blog={blog} />
         ))}
+        {/* <table>
+          <tbody>
+            {blogs.map(blog => (
+              <BlogRow key={blog.id} blog={blog} onClick={addBlog}/>
+            ))}
+          </tbody>
+        </table> */}
       </div>
     </div>
   )
@@ -178,4 +158,38 @@ export default App
 //       </div>
 //     </div>
 //   )
+// }
+//const addBlog = async event => {
+// event.preventDefault()
+// const blogObject = {
+//   title: newTitle,
+//   author: newAuthor,
+//   url: newUrl,
+// }
+//   try {
+//     const returnedBlog = await blogService.create(blogObject)
+//     setBlogs(blogs.concat(returnedBlog))
+//     // setNewTitle(''), setNewAuthor(''), setNewUrl(''), setCreateVisible(false)
+//     handleNotification(`A new blog ${newTitle} by ${newAuthor} added`, {
+//       text: 'green',
+//       border: 'green',
+//     })
+//   } catch (error) {
+//     handleNotification(error.response.data.error, {
+//       text: 'red',
+//       border: 'red',
+//     })
+//   }
+// }
+
+// const handleTitleChange = event => {
+//   setNewTitle(event.target.value)
+// }
+
+// const handleAuthorChange = event => {
+//   setNewAuthor(event.target.value)
+// }
+
+// const handleUrlChange = event => {
+//   setNewUrl(event.target.value)
 // }
