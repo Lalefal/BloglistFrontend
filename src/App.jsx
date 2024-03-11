@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import BlogRow from './components/BlogRow'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -89,6 +88,19 @@ const App = () => {
       })
     }
   }
+const addLike = async id => {
+  try {
+    const blogToUpdate = blogs.find(n => n.id === id)
+    const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 }
+    const returnedBlog = await blogService.update(id, updatedBlog)
+    setBlogs(blogs.map(blog => (blog.id !== id ? blog : returnedBlog)))
+  } catch (error) {
+      handleNotification(error.response.data.error, {
+        text: 'red',
+        border: 'red',
+      })
+    } 
+}
 
 
   if (user === null) {
@@ -119,77 +131,12 @@ const App = () => {
       <div>
         <h3>List of Blogs</h3>
         {blogs.map(blog => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} onClick={() => addLike(blog.id)} username={user.name} />
         ))}
-        {/* <table>
-          <tbody>
-            {blogs.map(blog => (
-              <BlogRow key={blog.id} blog={blog} onClick={addBlog}/>
-            ))}
-          </tbody>
-        </table> */}
+
       </div>
     </div>
   )
 }
 
 export default App
-
-// const blogForm = () => {
-//   const hideWhenVisible = { display: createVisible ? 'none' : '' }
-//   const showWhenVisible = { display: createVisible ? '' : 'none' }
-
-//   return (
-//     <div>
-//       <div style={hideWhenVisible}>
-//         <button onClick={() => setCreateVisible(true)}>Add new blog </button>
-//       </div>
-//       <div style={showWhenVisible}>
-//         <BlogForm
-//           onSubmit={addBlog}
-//           titleValue={newTitle}
-//           onTitleChange={handleTitleChange}
-//           authorValue={newAuthor}
-//           onAuthorChange={handleAuthorChange}
-//           urlValue={newUrl}
-//           onUrlChange={handleUrlChange}
-//         />
-//         <button onClick={() => setCreateVisible(false)}>cancel</button>
-//       </div>
-//     </div>
-//   )
-// }
-//const addBlog = async event => {
-// event.preventDefault()
-// const blogObject = {
-//   title: newTitle,
-//   author: newAuthor,
-//   url: newUrl,
-// }
-//   try {
-//     const returnedBlog = await blogService.create(blogObject)
-//     setBlogs(blogs.concat(returnedBlog))
-//     // setNewTitle(''), setNewAuthor(''), setNewUrl(''), setCreateVisible(false)
-//     handleNotification(`A new blog ${newTitle} by ${newAuthor} added`, {
-//       text: 'green',
-//       border: 'green',
-//     })
-//   } catch (error) {
-//     handleNotification(error.response.data.error, {
-//       text: 'red',
-//       border: 'red',
-//     })
-//   }
-// }
-
-// const handleTitleChange = event => {
-//   setNewTitle(event.target.value)
-// }
-
-// const handleAuthorChange = event => {
-//   setNewAuthor(event.target.value)
-// }
-
-// const handleUrlChange = event => {
-//   setNewUrl(event.target.value)
-// }

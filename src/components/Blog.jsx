@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, onClick }) => {
+const Blog = ({ blog, onClick, username }) => {
   const [visible, setVisible] = useState(false)
   
   const blogStyle = {
@@ -33,17 +33,20 @@ const Blog = ({ blog, onClick }) => {
             {visible && (
               <>
                 <tr>
-                  <td>{blog.author}</td>
+                  <td>Author: {blog.author}</td>
                 </tr>
                 <tr>
-                  <td>{blog.url}</td>
+                  <td>Url: {blog.url}</td>
                 </tr>
                 <tr>
                   <td>
-                    <span>Likes </span>
+                    <span>Likes: </span>
                     {blog.likes}&nbsp;
                     <button onClick={onClick}>Like</button>
                   </td>
+                </tr>
+                <tr>
+                  <td>User: {username}</td>
                 </tr>
               </>
             )}
@@ -55,57 +58,4 @@ const Blog = ({ blog, onClick }) => {
 
 
 export default Blog
-// <>
-//   <tr>
-//     <td>{blog.title}</td>
-//   </tr>
-//   <tr>
-//     <td>{blog.author}</td>
-//   </tr>
-//   <tr>
-//     <td>{blog.url}</td>
-//   </tr>
-//   <tr>
-//     <td>
-//       <span>Likes: </span>
-//       {blog.likes}&nbsp;
-//       <button onClick={onClick}>Like</button>
-//     </td>
-//   </tr>
-// </>
 
-// {
-//   /* {blog.title} {blog.author} {blog.likes} */
-// }
-// <div>
-// <tr>
-//   <td>{blog.title}</td>
-// </tr>
-// <tr>
-
-//   <td>{blog.author}</td>
-
-// </tr>
-// <tr>
-
-//   <td> {blog.url}</td>
-
-// </tr>
-// <tr>
-//   <td> {blog.likes}</td>
-// </tr>
-// </div>
-  
-          //   {/* <tr>
-          //   <td>{blog.author}</td>
-          // </tr>
-          // <tr>
-          //   <td> {blog.url}</td>
-          // </tr>
-          // <tr>
-          //   <td>
-          //     <span>Likes </span>
-          //     {blog.likes}&nbsp;
-          //     <button onClick={onClick}>Like</button>
-          //   </td>
-          // </tr> */}
