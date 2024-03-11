@@ -88,20 +88,43 @@ const App = () => {
       })
     }
   }
-const addLike = async id => {
-  try {
-    const blogToUpdate = blogs.find(n => n.id === id)
-    const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 }
-    const returnedBlog = await blogService.update(id, updatedBlog)
-    setBlogs(blogs.map(blog => (blog.id !== id ? blog : returnedBlog)))
-  } catch (error) {
+
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+
+  const addLike = async id => {
+    try {
+      const blogToUpdate = blogs.find(b => b.id === id)
+      const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 }
+      const returnedBlog = await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map(blog => (blog.id !== id ? blog : returnedBlog)))
+    } catch (error) {
       handleNotification(error.response.data.error, {
         text: 'red',
         border: 'red',
       })
-    } 
-}
+    }
+  }
 
+  const removeBlog = async blog => {
+    const confirmed = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author} ?`
+    )
+    if (confirmed) {
+      try {
+        await blogService.remove(blog.id)
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+        handleNotification(`Removed ${blog.title} by ${blog.author}`, {
+          text: 'green',
+          border: 'green',
+        })
+      } catch (error) {
+        handleNotification(error.response.data.error, {
+          text: 'red',
+          border: 'red',
+        })
+      }
+    }
+  }
 
   if (user === null) {
     return (
@@ -119,6 +142,8 @@ const addLike = async id => {
       </div>
     )
   }
+
+
   return (
     <div>
       <h2>Welcome to BlogsList</h2>
@@ -130,13 +155,38 @@ const addLike = async id => {
       </Togglable>
       <div>
         <h3>List of Blogs</h3>
-        {blogs.map(blog => (
-          <Blog key={blog.id} blog={blog} onClick={() => addLike(blog.id)} username={user.name} />
+        {/* {blogs.map(blog => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            onLike={() => addLike(blog.id)}
+          />
+        ))} */}
+        {sortedBlogs.map(blog => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            onLike={() => addLike(blog.id)}
+            currentUser={user.name}
+            onClick={() => removeBlog(blog)}
+          />
         ))}
-
       </div>
     </div>
   )
 }
 
 export default App
+
+// const removeBlog = blog => {
+//   window.confirm(`Remove blog ${blog.title} by ${blog.author} ?`) &&
+//     blogService
+//       .remove(blog.id)
+//     .then(response => {
+//       setBlogs(blogs.filter(b => b.id !== blog.id))
+//           handleNotification(`Removed ${blog.title} by ${blog.author}`, {
+//             text: 'green',
+//             border: 'green',
+//           })
+//     })
+// }
