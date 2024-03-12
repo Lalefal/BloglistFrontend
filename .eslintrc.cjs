@@ -1,11 +1,12 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, 'vitest-globals/env': true },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
+    'plugin:vitest-globals/recommended',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
@@ -26,10 +27,18 @@ module.exports = {
     'react/prop-types': 0,
     'no-unused-vars': 0,
   },
-  //   'react-refresh/only-export-components': [
-  //     'warn',
-  //     { allowConstantExport: true },
-  //   ],
-  //   'react/prop-types': false
-  // },
+//   overrides: [
+//     {
+//       files: ['**/*.test.jsx'], // Tässä määritetään, että sääntöjä sovelletaan vain tiedostoille, jotka päättyvät .test.jsx
+//       rules: {
+//         indent: [off], // Määritä sääntö indent: ['error', 4] testitiedostoille
+//       },
+//     },
+//   ],
 }
+//   'react-refresh/only-export-components': [
+//     'warn',
+//     { allowConstantExport: true },
+//   ],
+//   'react/prop-types': false
+// },

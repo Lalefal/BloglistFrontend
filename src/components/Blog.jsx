@@ -20,17 +20,20 @@ const Blog = ({ blog, onLike, onClick, currentUser }) => {
     setVisible(!visible)
   }
 
+  const buttonView = visible ? 'hide' : 'view'
+
+  //const showRemoveButton = currentUser && blogUser === currentUser
   const showRemoveButton = currentUser && blog.user.name === currentUser
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <table>
         <tbody>
           <tr>
             <td>
               {blog.title}&nbsp;
-              <button style={buttonStyle} onClick={toggleVisibility}>
-                {visible ? 'hide' : 'view'}
+              <button onClick={toggleVisibility} style={buttonStyle}>
+                {/* {visible ? 'hide' : 'view'} */} {buttonView}
               </button>
             </td>
           </tr>
@@ -51,6 +54,7 @@ const Blog = ({ blog, onLike, onClick, currentUser }) => {
               </tr>
               <tr>
                 <td>User: {blog.user.name}</td>
+                {/* <td>User: {blog.user.name}</td> */}
               </tr>
               {showRemoveButton && (
                 <>
@@ -76,4 +80,3 @@ Blog.propTypes = {
 }
 
 export default Blog
-

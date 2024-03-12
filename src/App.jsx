@@ -143,7 +143,6 @@ const App = () => {
     )
   }
 
-
   return (
     <div>
       <h2>Welcome to BlogsList</h2>
@@ -168,6 +167,7 @@ const App = () => {
             blog={blog}
             onLike={() => addLike(blog.id)}
             currentUser={user.name}
+            //blogUser={blog.user.name}
             onClick={() => removeBlog(blog)}
           />
         ))}
