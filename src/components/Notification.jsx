@@ -11,9 +11,14 @@ const Notification = ({ message, color }) => {
     padding: 10,
     margin: 15,
     fontSize: 20,
+    width: 400
   }
 
-  return <div style={notificationStyle}>{message}</div>
+  return (
+    <div className='error' style={notificationStyle}>
+      {message}
+    </div>
+  )
 }
 
 export default Notification

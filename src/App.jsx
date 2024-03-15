@@ -46,7 +46,7 @@ const App = () => {
     try {
       const user = await loginService.login({
         username,
-        password,
+        password
       })
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
       blogService.setToken(user.token)
@@ -56,7 +56,7 @@ const App = () => {
     } catch (error) {
       handleNotification(error.response.data.error, {
         text: 'red',
-        border: 'red',
+        border: 'red'
       })
     }
   }
@@ -78,13 +78,13 @@ const App = () => {
         `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
         {
           text: 'green',
-          border: 'green',
+          border: 'green'
         }
       )
     } catch (error) {
       handleNotification(error.response.data.error, {
         text: 'red',
-        border: 'red',
+        border: 'red'
       })
     }
   }
@@ -100,7 +100,7 @@ const App = () => {
     } catch (error) {
       handleNotification(error.response.data.error, {
         text: 'red',
-        border: 'red',
+        border: 'red'
       })
     }
   }
@@ -115,12 +115,12 @@ const App = () => {
         setBlogs(blogs.filter(b => b.id !== blog.id))
         handleNotification(`Removed ${blog.title} by ${blog.author}`, {
           text: 'green',
-          border: 'green',
+          border: 'green'
         })
       } catch (error) {
         handleNotification(error.response.data.error, {
           text: 'red',
-          border: 'red',
+          border: 'red'
         })
       }
     }
@@ -154,13 +154,6 @@ const App = () => {
       </Togglable>
       <div>
         <h3>List of Blogs</h3>
-        {/* {blogs.map(blog => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            onLike={() => addLike(blog.id)}
-          />
-        ))} */}
         {sortedBlogs.map(blog => (
           <Blog
             key={blog.id}
@@ -177,16 +170,3 @@ const App = () => {
 }
 
 export default App
-
-// const removeBlog = blog => {
-//   window.confirm(`Remove blog ${blog.title} by ${blog.author} ?`) &&
-//     blogService
-//       .remove(blog.id)
-//     .then(response => {
-//       setBlogs(blogs.filter(b => b.id !== blog.id))
-//           handleNotification(`Removed ${blog.title} by ${blog.author}`, {
-//             text: 'green',
-//             border: 'green',
-//           })
-//     })
-// }
